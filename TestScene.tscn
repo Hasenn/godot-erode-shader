@@ -1,0 +1,48 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://alpha_erode_animated.shader" type="Shader" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=2]
+
+[sub_resource type="Gradient" id=1]
+
+[sub_resource type="GradientTexture" id=2]
+gradient = SubResource( 1 )
+
+[sub_resource type="Gradient" id=3]
+offsets = PoolRealArray( 0.012605, 1 )
+colors = PoolColorArray( 0.999512, 0.464617, 0.464617, 1, 1, 1, 1, 1 )
+
+[sub_resource type="GradientTexture" id=4]
+gradient = SubResource( 3 )
+
+[sub_resource type="Curve" id=5]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.992337, 1 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=6]
+curve = SubResource( 5 )
+
+[sub_resource type="ShaderMaterial" id=7]
+shader = ExtResource( 1 )
+shader_param/particles_anim_h_frames = 3
+shader_param/particles_anim_v_frames = 3
+shader_param/particles_anim_loop = false
+shader_param/erosion_smoothness = 0.1
+shader_param/alpha_texture = SubResource( 2 )
+shader_param/erosion_curve = SubResource( 6 )
+shader_param/color_ramp = SubResource( 4 )
+
+[sub_resource type="ParticlesMaterial" id=8]
+flag_disable_z = true
+gravity = Vector3( 0, 98, 0 )
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+anim_offset = 1.0
+anim_offset_random = 1.0
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Particles2D" type="Particles2D" parent="."]
+material = SubResource( 7 )
+amount = 2
+process_material = SubResource( 8 )
+texture = ExtResource( 2 )
