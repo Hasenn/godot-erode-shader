@@ -1,5 +1,7 @@
 shader_type canvas_item;
 render_mode blend_mix;
+
+
 // Particle animation uniforms
 uniform int particles_anim_h_frames;
 uniform int particles_anim_v_frames;
@@ -9,8 +11,22 @@ uniform sampler2D alpha_texture:hint_black;
 uniform sampler2D erosion_curve:hint_black;
 uniform sampler2D color_ramp:hint_black;
 uniform float erosion_smoothness : hint_range(0.,0.5,0.01) = 0.1;
-
+uniform bool use_hue_shift = false;
+uniform sampler2D shift_curve : hint_black;
 varying float lifetime;
+
+vec4 HueShift (in vec3 color, in float Shift)
+{
+    vec3 P = vec3(0.55735)*dot(vec3(0.55735),color);
+    
+    vec3 U = color-P;
+    
+    vec3 V = cross(vec3(0.55735),U);    
+
+    color = U*cos(Shift*6.2832) + V*sin(Shift*6.2832) + P;
+    
+    return vec4(color,1.0);
+}
 
 void vertex() {
 	// Particle animation support
@@ -32,6 +48,12 @@ void vertex() {
 void fragment(){
     vec4 col = texture(TEXTURE,UV);
     col *= texture(color_ramp,vec2(lifetime,0));
+	if (use_hue_shift){
+		col.rgb = HueShift(
+			col.rgb,
+			texture(shift_curve,vec2(lifetime,0)).r
+		).rgb;
+	}
     float erosion = texture(alpha_texture,UV).r;
 	
     float t = texture(erosion_curve,vec2(lifetime,0)).x;
